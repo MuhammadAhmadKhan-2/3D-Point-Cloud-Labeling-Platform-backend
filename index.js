@@ -10,15 +10,36 @@ const app = express()
 
 // CORS configuration
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://your-frontend-domain.vercel.app"], // Add your production domain
     credentials: true
 }))
-
-const port = process.env.PORT || 5000
 
 // Middleware
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+// Connect to database once
+let dbConnected = false;
+const ensureDbConnection = async () => {
+    if (!dbConnected) {
+        await connectDb();
+        dbConnected = true;
+    }
+};
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+    try {
+        await ensureDbConnection();
+        next();
+    } catch (error) {
+        console.error('Database connection error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Database connection failed'
+        });
+    }
+});
 
 // Routes
 app.use('/api/auth', authRoutes)
@@ -30,6 +51,14 @@ app.get('/api/health', (req, res) => {
         success: true,
         message: 'Server is running',
         timestamp: new Date().toISOString()
+    })
+})
+
+// Root route for Vercel
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'API is running on Vercel'
     })
 })
 
@@ -51,8 +80,14 @@ app.use((error, req, res, next) => {
     })
 })
 
-app.listen(port, () => {
-    connectDb()
-    console.log(`Server is started on port ${port}`)
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
-})
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    const port = process.env.PORT || 5000
+    app.listen(port, () => {
+        console.log(`Server is started on port ${port}`)
+        console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
+    })
+}
+
+// Export the app for Vercel
+export default app;
