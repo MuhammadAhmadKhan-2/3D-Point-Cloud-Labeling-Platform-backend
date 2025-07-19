@@ -1,20 +1,23 @@
+// api/index.js
 import express from "express"
 import dotenv from "dotenv"
 dotenv.config()
-import connectDb from "./config/db.js"
-import cors from "cors";
-import authRoutes from "./routes/auth.js";
-import adminRoutes from "./routes/admin.js";
+
+import connectDb from "../config/db.js"
+import cors from "cors"
+import authRoutes from "../routes/auth.js"
+import adminRoutes from "../routes/admin.js"
 
 const app = express()
 
-// CORS configuration
+// Connect to DB (only once when cold start)
+connectDb()
+
+// CORS (update origin to frontend URL when live)
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "*", // or your deployed frontend
     credentials: true
 }))
-
-const port = process.env.PORT || 5000
 
 // Middleware
 app.use(express.json({ limit: '10mb' }))
@@ -24,7 +27,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 
-// Health check route
 app.get('/api/health', (req, res) => {
     res.json({
         success: true,
@@ -46,13 +48,9 @@ app.use((error, req, res, next) => {
     console.error('Global error:', error)
     res.status(500).json({
         success: false,
-        message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+        message: 'Internal server error'
     })
 })
 
-app.listen(port, () => {
-    connectDb()
-    console.log(`Server is started on port ${port}`)
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
-})
+
+export default app
