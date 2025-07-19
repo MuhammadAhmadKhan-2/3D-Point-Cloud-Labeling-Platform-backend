@@ -8,14 +8,25 @@ import adminRoutes from "./routes/admin.js";
 
 const app = express()
 
+// Debug middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`)
+    console.log('Headers:', req.headers)
+    console.log('Origin:', req.get('Origin'))
+    next()
+})
+
 // CORS configuration
 app.use(cors({
     origin: [
         "http://localhost:5173", 
+        "https://3-d-point-cloud-labeling-platform-f.vercel.app",
+        "https://pointcloudlabelingplatform.netlify.app" // Your actual Netlify frontend domain
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
+    optionsSuccessStatus: 200
 }))
 
 // Middleware
