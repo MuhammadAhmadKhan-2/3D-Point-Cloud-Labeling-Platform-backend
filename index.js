@@ -12,7 +12,6 @@ const app = express()
 app.use(cors({
     origin: [
         "http://localhost:5173", 
-        "https://3-d-point-cloud-labeling-platform-f.vercel.app"
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
