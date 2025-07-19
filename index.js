@@ -10,8 +10,13 @@ const app = express()
 
 // CORS configuration
 app.use(cors({
-    origin: ["http://localhost:5173", "https://3-d-point-cloud-labeling-platform-f.vercel.app/"], // Add your production domain
-    credentials: true
+    origin: [
+        "http://localhost:5173", 
+        "https://3-d-point-cloud-labeling-platform-f.vercel.app"
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
 // Middleware
