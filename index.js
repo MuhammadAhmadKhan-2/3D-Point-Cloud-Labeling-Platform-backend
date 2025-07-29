@@ -17,20 +17,41 @@ app.use((req, res, next) => {
 })
 
 // CORS configuration
-app.use(cors({
-    origin: [
-        "http://localhost:5173", 
-        'http://localhost:3000',
-        "https://metabread.cloud/",
-        "https://quiet-salmiakki-361d30.netlify.app/",
-        "https://pointcloudlabelingplatform.netlify.app" // Your actual Netlify frontend domain
-    ],
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://metabread.cloud',
+    'https://quiet-salmiakki-361d38.netlify.app',
+    'https://pointcloudlabelingplatform.netlify.app'
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Check if the origin is in the allowed list or is a subdomain of allowed domains
+        if (allowedOrigins.some(allowedOrigin => 
+            origin === allowedOrigin || 
+            origin.startsWith(allowedOrigin.replace('https://', 'https://www.'))
+        )) {
+            return callback(null, true);
+        }
+        
+        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-access-token'],
     exposedHeaders: ['Content-Range', 'X-Total-Count'],
     optionsSuccessStatus: 200
-}));
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Handle preflight requests
 app.options('*', cors());
