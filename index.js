@@ -22,6 +22,7 @@ app.use(cors({
         "http://localhost:5173", 
         'http://localhost:3000',
         "https://metabread.cloud/",
+        "https://quiet-salmiakki-361d30.netlify.app/",
         "https://pointcloudlabelingplatform.netlify.app" // Your actual Netlify frontend domain
     ],
     credentials: true,
