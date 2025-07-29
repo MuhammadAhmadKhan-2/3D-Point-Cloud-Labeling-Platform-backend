@@ -21,8 +21,10 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://metabread.cloud',
+    'https://quiet-salmiakki-361d0.netlify.app',
     'https://quiet-salmiakki-361d38.netlify.app',
-    'https://pointcloudlabelingplatform.netlify.app'
+    'https://pointcloudlabelingplatform.netlify.app',
+    'https://3-d-point-cloud-labeling-platfor-git-99cd39-ahmadkhans-projects.vercel.app'
 ];
 
 const corsOptions = {
