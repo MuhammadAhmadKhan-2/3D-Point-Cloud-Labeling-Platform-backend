@@ -21,7 +21,7 @@ app.use(cors({
     origin: [
         "http://localhost:5173", 
         "https://metabread.cloud/",
-        "https://pointcloudlabelingplatform.netlify.app" // Your actual Netlify frontend domain
+        // "https://pointcloudlabelingplatform.netlify.app" // Your actual Netlify frontend domain
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
