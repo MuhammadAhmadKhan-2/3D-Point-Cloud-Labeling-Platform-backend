@@ -21,9 +21,11 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://metabread.cloud',
-    'https://quiet-salmiakki-361d0.netlify.app',
+    'https://quiet-salmiakki-361d30.netlify.app',
     'https://quiet-salmiakki-361d38.netlify.app',
+    'https://quiet-salmiakki-361d30.netlify.app/api',
     'https://pointcloudlabelingplatform.netlify.app',
+    'https://3-d-point-cloud-labeling-platform-backend-fwrl-7fz79tgej.vercel.app/',
     'https://3-d-point-cloud-labeling-platfor-git-99cd39-ahmadkhans-projects.vercel.app'
 ];
 
@@ -32,14 +34,20 @@ const corsOptions = {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         
-        // Check if the origin is in the allowed list or is a subdomain of allowed domains
-        if (allowedOrigins.some(allowedOrigin => 
-            origin === allowedOrigin || 
-            origin.startsWith(allowedOrigin.replace('https://', 'https://www.'))
-        )) {
+        // Check if the origin exactly matches or is a subdomain of allowed domains
+        if (allowedOrigins.some(allowedOrigin => {
+            // Normalize URLs for comparison (remove trailing slashes and www if present)
+            const normalizeUrl = (url) => url.replace(/^https?:\/\/(www\.)?([^/]+).*$/, 'https://$2').replace(/\/$/, '');
+            const normalizedOrigin = normalizeUrl(origin);
+            const normalizedAllowed = normalizeUrl(allowedOrigin);
+            
+            return normalizedOrigin === normalizedAllowed || 
+                   normalizedOrigin === `https://www.${normalizedAllowed.replace('https://', '')}`;
+        })) {
             return callback(null, true);
         }
         
+        console.log('CORS blocked for origin:', origin);
         const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
         return callback(new Error(msg), false);
     },
@@ -47,7 +55,9 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-access-token'],
     exposedHeaders: ['Content-Range', 'X-Total-Count'],
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    // Handle preflight requests
+    preflightContinue: false
 };
 
 app.use(cors(corsOptions));
