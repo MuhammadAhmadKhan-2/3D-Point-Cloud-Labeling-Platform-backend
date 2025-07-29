@@ -23,50 +23,42 @@ const allowedOrigins = [
     'https://metabread.cloud',
     'https://quiet-salmiakki-361d30.netlify.app',
     'https://quiet-salmiakki-361d38.netlify.app',
-    'https://quiet-salmiakki-361d30.netlify.app/api',
     'https://pointcloudlabelingplatform.netlify.app',
-    'https://3-d-point-cloud-labeling-platform-backend-fwrl-7fz79tgej.vercel.app/',
+    'https://3-d-point-cloud-labeling-platform-backend-fwrl-7fz79tgej.vercel.app',
     'https://3-d-point-cloud-labeling-platfor-git-99cd39-ahmadkhans-projects.vercel.app'
 ];
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+// Enable CORS for all routes
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    
+    // Check if the origin is in the allowed list or matches a pattern
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+        // Simple check for exact match or subdomain
+        if (!origin) return false;
+        const normalizedOrigin = origin.replace(/\/$/, '');
+        const normalizedAllowed = allowedOrigin.replace(/\/$/, '');
         
-        // Check if the origin exactly matches or is a subdomain of allowed domains
-        if (allowedOrigins.some(allowedOrigin => {
-            // Normalize URLs for comparison (remove trailing slashes and www if present)
-            const normalizeUrl = (url) => url.replace(/^https?:\/\/(www\.)?([^/]+).*$/, 'https://$2').replace(/\/$/, '');
-            const normalizedOrigin = normalizeUrl(origin);
-            const normalizedAllowed = normalizeUrl(allowedOrigin);
-            
-            return normalizedOrigin === normalizedAllowed || 
-                   normalizedOrigin === `https://www.${normalizedAllowed.replace('https://', '')}`;
-        })) {
-            return callback(null, true);
-        }
-        
-        console.log('CORS blocked for origin:', origin);
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-access-token'],
-    exposedHeaders: ['Content-Range', 'X-Total-Count'],
-    optionsSuccessStatus: 200,
+        return normalizedOrigin === normalizedAllowed || 
+               normalizedOrigin === `https://www.${normalizedAllowed.replace('https://', '')}` ||
+               normalizedOrigin.startsWith(normalizedAllowed);
+    });
+
+    if (isAllowed || !origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, x-access-token');
+        res.setHeader('Access-Control-Expose-Headers', 'Content-Range, X-Total-Count');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+
     // Handle preflight requests
-    preflightContinue: false
-};
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
 
-app.use(cors(corsOptions));
-
-// Handle preflight requests
-app.options('*', cors(corsOptions));
-
-// Handle preflight requests
-app.options('*', cors());
+    next();
+});
 
 // Middleware
 app.use(express.json({ limit: '10mb' }))
