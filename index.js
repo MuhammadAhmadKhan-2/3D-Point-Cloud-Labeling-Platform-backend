@@ -25,7 +25,6 @@ const allowedOrigins = [
     'https://quiet-salmiakki-361d38.netlify.app',
     'https://pointcloudlabelingplatform.netlify.app',
     'https://3-d-point-cloud-labeling-platform-backend-fwrl-7fz79tgej.vercel.app',
-    'https://3-d-point-cloud-labeling-platfor-git-99cd39-ahmadkhans-projects.vercel.app'
 ];
 
 // Enable CORS for all routes
