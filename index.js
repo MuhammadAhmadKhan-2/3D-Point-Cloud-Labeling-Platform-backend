@@ -29,12 +29,10 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-access-token'],
     exposedHeaders: ['Content-Range', 'X-Total-Count'],
     optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+}));
 
 // Handle preflight requests
-app.options('*', cors(corsOptions));
+app.options('*', cors());
 
 // Middleware
 app.use(express.json({ limit: '10mb' }))
