@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 app.use(cors({
     origin: [
         "http://localhost:5173", 
-        "https://3-d-point-cloud-labeling-platform-f.vercel.app",
+        "http://metabread.cloud/",
         "https://pointcloudlabelingplatform.netlify.app" // Your actual Netlify frontend domain
     ],
     credentials: true,
