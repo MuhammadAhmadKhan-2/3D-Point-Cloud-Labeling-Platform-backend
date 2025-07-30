@@ -11,7 +11,7 @@ const app = express()
 // CORS configuration
 app.use(cors({
     origin: [
-        // "http://localhost:5173", 
+        "http://localhost:5173", 
         "https://calm-hamster-1e3234.netlify.app/",
     ],
     credentials: true,
