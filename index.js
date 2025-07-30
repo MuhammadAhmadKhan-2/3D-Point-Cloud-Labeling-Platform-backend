@@ -13,6 +13,7 @@ app.use(cors({
     origin: [
         "http://localhost:5173", 
         "https://calm-hamster-1e3234.netlify.app",
+        "https://metabread.cloud",
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
